@@ -147,10 +147,15 @@ class Visitor(FuncLangVisitor):
             return self.visit(ctx.val)
         elif ctx.ival:
             return self.visit(ctx.ival)
+        elif ctx.lval:
+            return self.visit(ctx.lval)
         elif ctx.ID():
             func_name = ctx.ID().getText()
             params = [self.visit(e) for e in ctx.expr()]
             return self._functions[func_name].call(self, params)
+
+    def visitLst(self, ctx):
+        return [self.visit(e) for e in ctx.expr()]
 
     def visitValue(self, ctx):
         if ctx.INT():

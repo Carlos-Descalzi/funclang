@@ -107,6 +107,15 @@ class FuncLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FuncLangParser#lst.
+    def enterLst(self, ctx:FuncLangParser.LstContext):
+        pass
+
+    # Exit a parse tree produced by FuncLangParser#lst.
+    def exitLst(self, ctx:FuncLangParser.LstContext):
+        pass
+
+
     # Enter a parse tree produced by FuncLangParser#value.
     def enterValue(self, ctx:FuncLangParser.ValueContext):
         pass

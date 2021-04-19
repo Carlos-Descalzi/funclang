@@ -40,7 +40,11 @@ exp:
 atom:
     val=value
     | LPAR ival=expr RPAR
-    | ID LPAR (expr ( COMMA expr)*)? RPAR;
+    | ID LPAR (expr ( COMMA expr)*)? RPAR
+    | lval=lst;
+
+lst:
+    LCBR  (expr ( COMMA expr)*)?  RCBR;
 
 value:
     INT
@@ -74,5 +78,7 @@ AND:        '&';
 XOR:        '^';
 NOT:        '~';
 LNOT:       '!';
+LCBR:       '{';
+RCBR:       '}';
 STRING:     DQUOTE ~["\r\n]* DQUOTE;
 WS:         [ \r\n\t]+ -> skip;

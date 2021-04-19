@@ -64,6 +64,11 @@ class FuncLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FuncLangParser#lst.
+    def visitLst(self, ctx:FuncLangParser.LstContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FuncLangParser#value.
     def visitValue(self, ctx:FuncLangParser.ValueContext):
         return self.visitChildren(ctx)
