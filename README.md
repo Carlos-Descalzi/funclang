@@ -27,6 +27,7 @@ Some examples:
 All functions return a value, even builtin functions.
 Assignment returns always 1.
 print returns always 1.
+One difference with Haskell is there is no pattern matching.
 
 ## Operators
 ```
