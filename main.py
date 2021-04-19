@@ -10,6 +10,22 @@ class BaseFunction:
         return 1
 
 
+class SplitFunction(BaseFunction):
+    def call(self, ctx, param_values):
+        p = param_values[0]
+        if p:
+            return (p[0], p[1:])
+        raise Exception("Empty list")
+
+
+class HeadFunction(BaseFunction):
+    def call(self, ctx, param_values):
+        p = param_values[0]
+        if p:
+            return p[0]
+        raise Exception("Empty list")
+
+
 class PrintFunction(BaseFunction):
     def call(self, ctx, param_values):
         print(*param_values)
@@ -34,9 +50,11 @@ class Function(BaseFunction):
 class Visitor(FuncLangVisitor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._context_stack = []
+        self._context_stack = [{}]
         self._functions = {}
         self._functions["print"] = PrintFunction()
+        self._functions["split"] = SplitFunction()
+        self._functions["head"] = HeadFunction()
 
     def push_ctx(self, data):
         self._context_stack.append(data)
@@ -54,11 +72,30 @@ class Visitor(FuncLangVisitor):
                 return value
         raise KeyError(name)
 
+    def set_var(self, name, value):
+        if name in self._context_stack[-1]:
+            raise Exception("Variable already defined")
+        self._context_stack[-1][name] = value
+
     def visitFuncdef(self, ctx):
         ids = [i.getText() for i in ctx.ID()]
         func_name, params = ids[0], ids[1:]
         self._functions[func_name] = Function(self, func_name, params, ctx.body)
         return self._functions[func_name]
+
+    def visitAssign(self, ctx):
+        var_names = ctx.ID()
+        var_values = self.visit(ctx.expr())
+        if not isinstance(var_values, tuple):
+            var_values = (var_values,)
+
+        if len(var_names) != len(var_values):
+            raise Exception("Unable to match all variables")
+
+        for k, v in zip(var_names, var_values):
+            self.set_var(k.getText(), v)
+
+        return 1
 
     def visitComp(self, ctx):
         booleans = ctx.boolean()
@@ -151,8 +188,13 @@ class Visitor(FuncLangVisitor):
             return self.visit(ctx.lval)
         elif ctx.ID():
             func_name = ctx.ID().getText()
-            params = [self.visit(e) for e in ctx.expr()]
+            params = self.visit(ctx.params())
             return self._functions[func_name].call(self, params)
+
+    def visitParams(self, ctx):
+        if ctx.DOLLAR():
+            return self.visit(ctx.listexpr)
+        return [self.visit(e) for e in ctx.expr()]
 
     def visitLst(self, ctx):
         return [self.visit(e) for e in ctx.expr()]

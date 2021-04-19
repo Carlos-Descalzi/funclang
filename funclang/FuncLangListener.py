@@ -26,12 +26,30 @@ class FuncLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by FuncLangParser#simplestmt.
+    def enterSimplestmt(self, ctx:FuncLangParser.SimplestmtContext):
+        pass
+
+    # Exit a parse tree produced by FuncLangParser#simplestmt.
+    def exitSimplestmt(self, ctx:FuncLangParser.SimplestmtContext):
+        pass
+
+
     # Enter a parse tree produced by FuncLangParser#funcdef.
     def enterFuncdef(self, ctx:FuncLangParser.FuncdefContext):
         pass
 
     # Exit a parse tree produced by FuncLangParser#funcdef.
     def exitFuncdef(self, ctx:FuncLangParser.FuncdefContext):
+        pass
+
+
+    # Enter a parse tree produced by FuncLangParser#assign.
+    def enterAssign(self, ctx:FuncLangParser.AssignContext):
+        pass
+
+    # Exit a parse tree produced by FuncLangParser#assign.
+    def exitAssign(self, ctx:FuncLangParser.AssignContext):
         pass
 
 
@@ -104,6 +122,15 @@ class FuncLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by FuncLangParser#atom.
     def exitAtom(self, ctx:FuncLangParser.AtomContext):
+        pass
+
+
+    # Enter a parse tree produced by FuncLangParser#params.
+    def enterParams(self, ctx:FuncLangParser.ParamsContext):
+        pass
+
+    # Exit a parse tree produced by FuncLangParser#params.
+    def exitParams(self, ctx:FuncLangParser.ParamsContext):
         pass
 
 

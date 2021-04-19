@@ -6,12 +6,21 @@ statements:
     (statement SEMICOLON )+;
 
 statement:
-    expr
+    simplestmt
     | funcdef
     ;
 
+simplestmt:
+    expr
+    | assign
+    ;
+
+
 funcdef:
     ID LPAR (ID ( COMMA ID)*)? RPAR COLON body=expr;
+
+assign:
+    ID (COMMA ID)* EQ expr;
 
 expr:
     comp 
@@ -39,9 +48,14 @@ exp:
 
 atom:
     val=value
-    | LPAR ival=expr RPAR
-    | ID LPAR (expr ( COMMA expr)*)? RPAR
+    | LPAR ival=simplestmt RPAR
+    | ID LPAR (params)? RPAR
     | lval=lst;
+
+params:
+    expr (COMMA expr)*
+    | DOLLAR listexpr=expr
+    ;
 
 lst:
     LCBR  (expr ( COMMA expr)*)?  RCBR;
@@ -80,5 +94,6 @@ NOT:        '~';
 LNOT:       '!';
 LCBR:       '{';
 RCBR:       '}';
+DOLLAR:     '$';
 STRING:     DQUOTE ~["\r\n]* DQUOTE;
 WS:         [ \r\n\t]+ -> skip;

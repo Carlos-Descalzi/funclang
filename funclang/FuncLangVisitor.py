@@ -19,8 +19,18 @@ class FuncLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by FuncLangParser#simplestmt.
+    def visitSimplestmt(self, ctx:FuncLangParser.SimplestmtContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by FuncLangParser#funcdef.
     def visitFuncdef(self, ctx:FuncLangParser.FuncdefContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FuncLangParser#assign.
+    def visitAssign(self, ctx:FuncLangParser.AssignContext):
         return self.visitChildren(ctx)
 
 
@@ -61,6 +71,11 @@ class FuncLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by FuncLangParser#atom.
     def visitAtom(self, ctx:FuncLangParser.AtomContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by FuncLangParser#params.
+    def visitParams(self, ctx:FuncLangParser.ParamsContext):
         return self.visitChildren(ctx)
 
 
