@@ -96,4 +96,5 @@ LCBR:       '{';
 RCBR:       '}';
 DOLLAR:     '$';
 STRING:     DQUOTE ~["\r\n]* DQUOTE;
+COMMENT:    '#' ~[\n]* -> skip;
 WS:         [ \r\n\t]+ -> skip;

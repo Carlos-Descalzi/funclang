@@ -1,7 +1,17 @@
+# Declare function x
 x(a,b): a + b; 
+# Declare function y
 y(a,b): a * b; 
-print(x(1,2));
-print(y(1,2));
-print(1==1);
-print("HOLA" + "!!!");
-print(0 ? "a" : "b");
+# Use functions
+print("x:",x(1,2));
+print("y:",y(1,2));
+print("x,y:",x(y(1,2),3));
+print("print function:",x);
+# Function as parameter
+z(f,a,b): f(a,b);
+print("function as first class object:",z(x,1,2));
+# Some tests
+print("compare:",1==1);
+print("some strings:","HOLA" + "!!!");
+print("conditionals:",0 ? "a" : "b");
+print("conditionals:",1 ? "a" : "b");

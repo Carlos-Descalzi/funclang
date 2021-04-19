@@ -6,11 +6,27 @@ import sys
 
 
 class BaseFunction:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
     def call(self, ctx, param_values):
         return 1
 
+    def __str__(self):
+        return f"<function {self._name}>"
+
+    def __repr__(self):
+        return str(self)
+
 
 class SplitFunction(BaseFunction):
+    def __init__(self):
+        super().__init__("split")
+
     def call(self, ctx, param_values):
         p = param_values[0]
         if p:
@@ -19,6 +35,9 @@ class SplitFunction(BaseFunction):
 
 
 class HeadFunction(BaseFunction):
+    def __init__(self):
+        super().__init__("head")
+
     def call(self, ctx, param_values):
         p = param_values[0]
         if p:
@@ -27,15 +46,18 @@ class HeadFunction(BaseFunction):
 
 
 class PrintFunction(BaseFunction):
+    def __init__(self):
+        super().__init__("print")
+
     def call(self, ctx, param_values):
         print(*param_values)
         return 1
 
 
 class Function(BaseFunction):
-    def __init__(self, parent, name, params, body):
+    def __init__(self, name, parent, params, body):
+        super().__init__(name)
         self._parent = parent
-        self._name = name
         self._params = params
         self._body = body
 
@@ -52,9 +74,12 @@ class Visitor(FuncLangVisitor):
         super().__init__(*args, **kwargs)
         self._context_stack = [{}]
         self._functions = {}
-        self._functions["print"] = PrintFunction()
-        self._functions["split"] = SplitFunction()
-        self._functions["head"] = HeadFunction()
+        self._add_function(PrintFunction())
+        self._add_function(SplitFunction())
+        self._add_function(HeadFunction())
+
+    def _add_function(self, function):
+        self._functions[function.name] = function
 
     def push_ctx(self, data):
         self._context_stack.append(data)
@@ -70,6 +95,8 @@ class Visitor(FuncLangVisitor):
             value = self._context_stack[-1].get(name)
             if value is not None:
                 return value
+        if name in self._functions:
+            return self._functions[name]
         raise KeyError(name)
 
     def set_var(self, name, value):
@@ -80,8 +107,8 @@ class Visitor(FuncLangVisitor):
     def visitFuncdef(self, ctx):
         ids = [i.getText() for i in ctx.ID()]
         func_name, params = ids[0], ids[1:]
-        self._functions[func_name] = Function(self, func_name, params, ctx.body)
-        return self._functions[func_name]
+        self._add_function(Function(func_name, self, params, ctx.body))
+        return 1
 
     def visitAssign(self, ctx):
         var_names = ctx.ID()
@@ -189,7 +216,7 @@ class Visitor(FuncLangVisitor):
         elif ctx.ID():
             func_name = ctx.ID().getText()
             params = self.visit(ctx.params())
-            return self._functions[func_name].call(self, params)
+            return self.get_var(func_name).call(self, params)
 
     def visitParams(self, ctx):
         if ctx.DOLLAR():
