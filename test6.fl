@@ -1,0 +1,10 @@
+# Get maximum value of a list
+max(x): x 
+    ? { h,t=split(x); m=max(t); h > m ? h : m } 
+    : 0;
+# Summatory of items in a list
+sum(x) : x ? {h,t=split(x); h+sum(t)} : 0;
+# Test
+a = [1,2,3,4,5];
+print(max(a));
+print(sum(a));

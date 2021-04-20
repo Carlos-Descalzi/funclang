@@ -2,4 +2,4 @@ printlines(x): x
     ? (h,t=split(x)) & print(h) & printlines(t)
     : 1;
 
-printlines({1,2,3,4,5});
+printlines([1,2,3,4,5]);

@@ -13,11 +13,11 @@ statement:
 simplestmt:
     expr
     | assign
+    | LCBR simplestmt (SEMICOLON simplestmt)* RCBR
     ;
 
-
 funcdef:
-    ID LPAR (ID ( COMMA ID)*)? RPAR COLON body=expr;
+    ID LPAR (ID ( COMMA ID)*)? RPAR COLON simplestmt;
 
 assign:
     ID (COMMA ID)* EQ expr;
@@ -27,7 +27,7 @@ expr:
     | conditional;
 
 conditional:
-    condition=comp QUESTION ifcase=expr COLON elsecase=expr;
+    condition=comp QUESTION ifcase=simplestmt COLON elsecase=simplestmt;
 
 comp:
     right=boolean (op=(LT|LTE|GT|GTE|CEQ) left=boolean)*;
@@ -58,7 +58,7 @@ params:
     ;
 
 lst:
-    LCBR  (expr ( COMMA expr)*)?  RCBR;
+    LBR  (expr ( COMMA expr)*)?  RBR;
 
 value:
     INT
@@ -92,6 +92,8 @@ AND:        '&';
 XOR:        '^';
 NOT:        '~';
 LNOT:       '!';
+LBR:        '[';
+RBR:        ']';
 LCBR:       '{';
 RCBR:       '}';
 DOLLAR:     '$';

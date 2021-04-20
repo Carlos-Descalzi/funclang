@@ -45,6 +45,16 @@ class HeadFunction(BaseFunction):
         raise Exception("Empty list")
 
 
+class MapFunction(BaseFunction):
+    def __init__(self):
+        super().__init__("map")
+
+    def call(self, ctx, param_values):
+        f = param_values[0]
+        array = param_values[1]
+        return [f.call(ctx, [e]) for e in array]
+
+
 class PrintFunction(BaseFunction):
     def __init__(self):
         super().__init__("print")
@@ -77,6 +87,7 @@ class Visitor(FuncLangVisitor):
         self._add_function(PrintFunction())
         self._add_function(SplitFunction())
         self._add_function(HeadFunction())
+        self._add_function(MapFunction())
 
     def _add_function(self, function):
         self._functions[function.name] = function
@@ -107,8 +118,26 @@ class Visitor(FuncLangVisitor):
     def visitFuncdef(self, ctx):
         ids = [i.getText() for i in ctx.ID()]
         func_name, params = ids[0], ids[1:]
-        self._add_function(Function(func_name, self, params, ctx.body))
+        body = ctx.simplestmt()
+        self._add_function(Function(func_name, self, params, body))
         return 1
+
+    def visitSimplestmt(self, ctx):
+        expr = ctx.expr()
+
+        if expr:
+            return self.visit(expr)
+
+        assign = ctx.assign()
+
+        if assign:
+            return self.visit(assign)
+
+        statements = ctx.simplestmt()
+        result = 0
+        for stmt in statements:
+            result = self.visit(stmt)
+        return result
 
     def visitAssign(self, ctx):
         var_names = ctx.ID()
@@ -235,15 +264,44 @@ class Visitor(FuncLangVisitor):
             return self.get_var(ctx.ID().getText())
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python3 main.py [inputfilename]")
-        sys.exit(1)
-
-    input_stream = antlr4.FileStream(sys.argv[1])
+def get_tree(input_stream):
     lexer = FuncLangLexer(input_stream)
     tokens = antlr4.CommonTokenStream(lexer)
     parser = FuncLangParser(tokens)
-    tree = parser.statements()
+    return parser.statements()
+
+
+def parse_file(filename):
+    input_stream = antlr4.FileStream(filename)
+    tree = get_tree(input_stream)
     visitor = Visitor()
     visitor.visit(tree)
+
+
+def interactive():
+    visitor = Visitor()
+
+    string_buffer = ""
+    while True:
+        try:
+            if len(string_buffer) == 0:
+                print("> ", end="")
+            else:
+                print("+ ", end="")
+            string_buffer += input().strip()
+            if string_buffer[-1] == ";":
+                input_stream = antlr4.InputStream(string_buffer)
+                string_buffer = ""
+                visitor.visit(get_tree(input_stream))
+        except KeyError as e:
+            print(f"Undefined variable {e}")
+        except EOFError:
+            break
+
+
+if __name__ == "__main__":
+
+    if len(sys.argv) > 1:
+        parse_file(sys.argv[1])
+    else:
+        interactive()
