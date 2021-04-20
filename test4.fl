@@ -1,8 +1,12 @@
+# Print a list
 print([1,2,3,4]);
+# Convert a list into function parameters
 print($[1,2,3,4]);
+# head function
 a = [1,2,3];
 c=head(a);
 print(c);
+# split function, separates a list into head and tail
 d,e=split(a);
 print("d:",d);
 print($e);
